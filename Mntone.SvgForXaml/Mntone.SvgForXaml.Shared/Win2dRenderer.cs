@@ -442,9 +442,24 @@ namespace Mntone.SvgForXaml
 			{
 				child = ((SvgUseElement)child).InstanceRoot;
 			}
-			if (child.GetType() != typeof(SvgPathElement)) throw new ArgumentException();
 
-			return this.CreatePath(session, (SvgPathElement)child);
+			if (child.GetType() == typeof(SvgPathElement))
+			{
+				return this.CreatePath(session, (SvgPathElement)child);
+			}
+			else if (child is SvgRectElement)
+			{
+				var casted = ((SvgRectElement)child);
+				return CanvasGeometry.CreateRoundedRectangle(
+					session,
+					this.LengthConverter.ConvertX(casted.X), this.LengthConverter.ConvertY(casted.Y),
+					this.LengthConverter.ConvertX(casted.Width), this.LengthConverter.ConvertY(casted.Height),
+					this.LengthConverter.ConvertX(casted.RoundedX), this.LengthConverter.ConvertY(casted.RoundedY));
+			}
+			else
+			{
+				throw new ArgumentException();
+			}
 		}
 
 		private CanvasSolidColorBrush CreateColor(CanvasDrawingSession session, SvgColor color)
