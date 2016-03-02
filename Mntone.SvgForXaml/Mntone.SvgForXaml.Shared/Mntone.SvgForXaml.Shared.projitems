@@ -41,6 +41,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Path\SvgPathSegmentMoveTo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Path\SvgPathSegmentParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\RgbColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgDisplayType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgDisplay.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgAngle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgFillRule.cs" />

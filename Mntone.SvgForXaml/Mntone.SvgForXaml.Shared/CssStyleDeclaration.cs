@@ -8,7 +8,7 @@ namespace Mntone.SvgForXaml
 {
 	public sealed class CssStyleDeclaration
 	{
-		private static readonly string[] NON_INHERIT_PROPERTIES = { "fill", "stroke" };
+		private static readonly string[] NON_INHERIT_PROPERTIES = { "display", "fill", "stroke" };
 
 		private readonly ISvgStylable _parent;
 		private readonly List<string> _items;
@@ -41,7 +41,8 @@ namespace Mntone.SvgForXaml
 				{
 					value = ((SvgColor)c.Value.Item2).Clone();
 				}
-				else if (target.GetType() == typeof(SvgNumber) || target.GetType() == typeof(SvgLength))
+				else if (target.GetType() == typeof(SvgNumber) || target.GetType() == typeof(SvgLength) ||
+						 target.GetType() == typeof(SvgDisplay))
 				{
 					value = c.Value.Item2;
 				}
@@ -95,6 +96,7 @@ namespace Mntone.SvgForXaml
 		public SvgNumber? StopOpacity => this.GetPropertyCssValue("stop-opacity") as SvgNumber?;
 		public SvgIri ClipPath => this.GetPropertyCssValue("clip-path") as SvgIri;
 		public SvgNumber? Opacity => this.GetPropertyCssValue("opacity") as SvgNumber?;
+		public SvgDisplay Display => this.GetPropertyCssValue("display") as SvgDisplay? ?? SvgDisplay.Initial;
 
 		private void ParseText(string css)
 		{
@@ -148,6 +150,9 @@ namespace Mntone.SvgForXaml
 				case "fill-rule":
 				case "clip-rule":
 					parsedValue = new SvgFillRule(presentation ? value : value.ToLower());
+					break;
+				case "display":
+					parsedValue = new SvgDisplay(value);
 					break;
 			}
 

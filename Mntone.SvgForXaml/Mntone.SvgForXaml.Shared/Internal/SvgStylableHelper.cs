@@ -18,6 +18,7 @@ namespace Mntone.SvgForXaml.Internal
 			"stop-opacity",
 			"clip-path",
 			"opacity",
+			"display"
 		};
 
 		public SvgStylableHelper(ISvgStylable parent, XmlElement element)

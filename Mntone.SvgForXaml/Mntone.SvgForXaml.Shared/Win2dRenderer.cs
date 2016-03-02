@@ -55,11 +55,15 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderSvg(CanvasDrawingSession session, SvgSvgElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			this.RenderChildren(session, element.ChildNodes);
 		}
 
 		protected override void RenderGroup(CanvasDrawingSession session, SvgGroupElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			using (var t = TransformSession.CreateTransformSession(session, element.Transform.Result))
 			{
 				this.RenderChildren(session, element.ChildNodes);
@@ -68,6 +72,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderUse(CanvasDrawingSession session, SvgUseElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			using (var t = TransformSession.CreateTransformSession(session, element.Transform.Result))
 			{
 				this.RenderChild(session, element.InstanceRoot);
@@ -137,12 +143,16 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderPath(CanvasDrawingSession session, SvgPathElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			var geometry = this.CreatePath(session, element); // NO Dispose!
 			this.RenderGeometory(session, geometry, element.Transform.Result, element.Style);
 		}
 
 		protected override void RenderRect(CanvasDrawingSession session, SvgRectElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			var x = this.LengthConverter.ConvertX(element.X);
 			var y = this.LengthConverter.ConvertY(element.Y);
 			var width = this.LengthConverter.ConvertX(element.Width);
@@ -157,6 +167,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderCircle(CanvasDrawingSession session, SvgCircleElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			var centerX = this.LengthConverter.ConvertX(element.CenterX);
 			var centerY = this.LengthConverter.ConvertY(element.CenterY);
 			var radiusX = this.LengthConverter.ConvertX(element.Radius);
@@ -169,6 +181,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderEllipse(CanvasDrawingSession session, SvgEllipseElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			var centerX = this.LengthConverter.ConvertX(element.CenterX);
 			var centerY = this.LengthConverter.ConvertY(element.CenterY);
 			var radiusX = this.LengthConverter.ConvertX(element.RadiusX);
@@ -181,6 +195,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderLine(CanvasDrawingSession session, SvgLineElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			var x1 = this.LengthConverter.ConvertX(element.X1);
 			var y1 = this.LengthConverter.ConvertY(element.Y1);
 			var x2 = this.LengthConverter.ConvertX(element.X2);
@@ -200,6 +216,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderPolyline(CanvasDrawingSession session, SvgPolylineElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			using (var builder = new CanvasPathBuilder(this.ResourceCreator))
 			{
 				var begin = element.Points.First();
@@ -219,6 +237,8 @@ namespace Mntone.SvgForXaml
 
 		protected override void RenderPolygon(CanvasDrawingSession session, SvgPolygonElement element)
 		{
+			if (element.Style.Display.Value == SvgDisplayType.None) return;
+
 			using (var geometry = CanvasGeometry.CreatePolygon(this.ResourceCreator, element.Points.Select(p => new Vector2 { X = p.X, Y = p.Y }).ToArray()))
 			{
 				this.RenderGeometory(session, geometry, element.Transform.Result, element.Style);
