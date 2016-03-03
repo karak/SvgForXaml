@@ -533,10 +533,11 @@ namespace Mntone.SvgForXaml
 			var stops = element.ChildNodes.Cast<SvgStopElement>().Select(s =>
 			{
 				var alpha = s.Style.StopOpacity.HasValue ? (byte)(255.0F * s.Style.StopOpacity.Value) : (byte)0xff;
+				var color = s.Style.StopColor != null ? Color.FromArgb(alpha, s.Style.StopColor.RgbColor.Red, s.Style.StopColor.RgbColor.Green, s.Style.StopColor.RgbColor.Blue) : Color.FromArgb(alpha, 0, 0, 0);
 				var stop = new CanvasGradientStop()
 				{
 					Position = s.Offset,
-					Color = Color.FromArgb(alpha, s.Style.StopColor.RgbColor.Red, s.Style.StopColor.RgbColor.Green, s.Style.StopColor.RgbColor.Blue)
+					Color = color
 				};
 				return stop;
 			}).ToArray();
@@ -571,10 +572,11 @@ namespace Mntone.SvgForXaml
 			var stops = element.ChildNodes.Cast<SvgStopElement>().Select(s =>
 			{
 				var alpha = s.Style.StopOpacity.HasValue ? (byte)(255.0F * s.Style.StopOpacity.Value) : (byte)0xff;
+				var color = s.Style.StopColor != null ? Color.FromArgb(alpha, s.Style.StopColor.RgbColor.Red, s.Style.StopColor.RgbColor.Green, s.Style.StopColor.RgbColor.Blue) : Color.FromArgb(alpha, 0, 0, 0);
 				var stop = new CanvasGradientStop()
 				{
 					Position = s.Offset,
-					Color = Color.FromArgb(alpha, s.Style.StopColor.RgbColor.Red, s.Style.StopColor.RgbColor.Green, s.Style.StopColor.RgbColor.Blue)
+					Color = color
 				};
 				return stop;
 			}).ToArray();
