@@ -21,19 +21,7 @@ namespace Mntone.SvgForXaml
 			this.Width = element.ParseLength("width", nan);
 			this.Height = element.ParseLength("height", nan);
 			this.Href = element.GetAttributeNS("http://www.w3.org/1999/xlink", "href").Substring(1);
-			
-			var child = (SvgElement)this.OwnerDocument.GetElementById(this.Href).CloneNode(true);
-			if (child.GetType() == typeof(SvgSymbolElement))
-			{
-				throw new NotImplementedException();
-			}
-			else if (child.GetType() == typeof(SvgRectElement))
-			{
-				var casted = (SvgRectElement)child;
-				if (this.Width.UnitType != SvgLength.SvgLengthType.Unknown) casted.Width = this.Width;
-				if (this.Height.UnitType != SvgLength.SvgLengthType.Unknown) casted.Height = this.Height;
-			}
-			this.InstanceRoot = child;
+			this.lazyInstanceRoot = new Lazy<SvgElement>(this.CreateInstanceRoot, true);
 
 			if (this.X.UnitType != SvgLength.SvgLengthType.Unknown && this.Y.UnitType != SvgLength.SvgLengthType.Unknown)
 			{
@@ -46,7 +34,7 @@ namespace Mntone.SvgForXaml
 		protected override void DeepCopy(SvgElement element)
 		{
 			var casted = (SvgUseElement)element;
-			casted.InstanceRoot = (SvgElement)this.InstanceRoot.CloneNode();
+			casted.lazyInstanceRoot = new Lazy<SvgElement>(() => (SvgElement)this.InstanceRoot.CloneNode(), true);
 			casted._stylableHelper = this._stylableHelper.DeepCopy(casted);
 			casted._transformableHelper = this._transformableHelper.DeepCopy();
 		}
@@ -57,7 +45,30 @@ namespace Mntone.SvgForXaml
 		public SvgLength Width { get; }
 		public SvgLength Height { get; }
 		public string Href { get; }
-		public SvgElement InstanceRoot { get; private set; }
+		private Lazy<SvgElement> lazyInstanceRoot;
+		public SvgElement InstanceRoot => lazyInstanceRoot.Value;
+
+		private SvgElement CreateInstanceRoot()
+		{
+			var refNode = this.OwnerDocument.GetElementById(this.Href);
+			if (refNode == null)
+			{
+				throw new NullReferenceException($"No element with id = {this.Href}");
+			}
+
+			var child = (SvgElement)refNode.CloneNode(true);
+			if (child.GetType() == typeof(SvgSymbolElement))
+			{
+				throw new NotImplementedException();
+			}
+			else if (child.GetType() == typeof(SvgRectElement))
+			{
+				var casted = (SvgRectElement)child;
+				if (this.Width.UnitType != SvgLength.SvgLengthType.Unknown) casted.Width = this.Width;
+				if (this.Height.UnitType != SvgLength.SvgLengthType.Unknown) casted.Height = this.Height;
+			}
+			return child;
+		}
 
 		#region ISvgStylable
 		[System.Diagnostics.DebuggerBrowsable(System.Diagnostics.DebuggerBrowsableState.Never)]
