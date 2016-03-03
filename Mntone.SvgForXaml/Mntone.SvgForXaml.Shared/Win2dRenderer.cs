@@ -255,6 +255,7 @@ namespace Mntone.SvgForXaml
 
 			var open = false;
 			var v = new Vector2 { X = 0.0F, Y = 0.0F };
+			var prevC2 = new Vector2();
 
 			CanvasGeometry geometry;
 			using (var builder = new CanvasPathBuilder(this.ResourceCreator))
@@ -320,6 +321,8 @@ namespace Mntone.SvgForXaml
 						v.X = casted.X;
 						v.Y = casted.Y;
 						builder.AddCubicBezier(new Vector2 { X = casted.X1, Y = casted.Y1 }, new Vector2 { X = casted.X2, Y = casted.Y2 }, v);
+						prevC2.X = casted.X2;
+						prevC2.Y = casted.Y2;
 					}
 					else if (segment.PathSegmentType == SvgPathSegment.SvgPathSegmentType.CurveToCubicRelative)
 					{
@@ -333,6 +336,8 @@ namespace Mntone.SvgForXaml
 						v.X += casted.X;
 						v.Y += casted.Y;
 						builder.AddCubicBezier(c1, c2, v);
+						prevC2.X = c2.X;
+						prevC2.Y = c2.Y;
 					}
 					else if (segment.PathSegmentType == SvgPathSegment.SvgPathSegmentType.CurveToQuadraticAbsolute)
 					{
@@ -396,21 +401,25 @@ namespace Mntone.SvgForXaml
 					else if (segment.PathSegmentType == SvgPathSegment.SvgPathSegmentType.CurveToCubicSmoothAbsolute)
 					{
 						var casted = (SvgPathSegmentCurveToCubicSmoothAbsolute)segment;
-						var c1 = v;
+						var c1 = Opposite(prevC2, v);
 						v.X = casted.X;
 						v.Y = casted.Y;
 						builder.AddCubicBezier(c1, new Vector2 { X = casted.X2, Y = casted.Y2 }, v);
+						prevC2.X = casted.X2;
+						prevC2.Y = casted.Y2;
 					}
 					else if (segment.PathSegmentType == SvgPathSegment.SvgPathSegmentType.CurveToCubicSmoothRelative)
 					{
 						var casted = (SvgPathSegmentCurveToCubicSmoothRelative)segment;
-						var c1 = v;
+						var c1 = Opposite(prevC2, v);
 						var c2 = v;
 						c2.X += casted.X2;
 						c2.Y += casted.Y2;
 						v.X += casted.X;
 						v.Y += casted.Y;
 						builder.AddCubicBezier(c1, c2, v);
+						prevC2.X = c2.X;
+						prevC2.Y = c2.Y;
 					}
 					else if (segment.PathSegmentType == SvgPathSegment.SvgPathSegmentType.CurveToQuadraticSmoothAbsolute)
 					{
@@ -439,6 +448,11 @@ namespace Mntone.SvgForXaml
 			this.DisposableObjects.Add(geometry);
 			this.PathCache.Add(element, geometry);
 			return geometry;
+		}
+
+		private static Vector2 Opposite(Vector2 p, Vector2 basePoint)
+		{
+			return new Vector2 { X = 2 * basePoint.X - p.X, Y = 2 * basePoint.Y - p.Y };
 		}
 
 		private CanvasGeometry CreateClipPath(CanvasDrawingSession session, SvgClipPathElement element)
