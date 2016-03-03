@@ -8,7 +8,7 @@ namespace Mntone.SvgForXaml
 {
 	public sealed class CssStyleDeclaration
 	{
-		private static readonly string[] NON_INHERIT_PROPERTIES = { "display", "fill", "stroke" };
+		private static readonly string[] NON_INHERIT_PROPERTIES = { "display" }; // { "display", "fill", "stroke" };
 
 		private readonly ISvgStylable _parent;
 		private readonly List<string> _items;
