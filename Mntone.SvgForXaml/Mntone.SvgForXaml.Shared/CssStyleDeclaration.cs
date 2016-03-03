@@ -42,6 +42,7 @@ namespace Mntone.SvgForXaml
 					value = ((SvgColor)c.Value.Item2).Clone();
 				}
 				else if (target.GetType() == typeof(SvgNumber) || target.GetType() == typeof(SvgLength) ||
+						 target.GetType() == typeof(SvgStrokeLinecap) || target.GetType() == typeof(SvgStrokeLinejoin) ||
 						 target.GetType() == typeof(SvgDisplay))
 				{
 					value = c.Value.Item2;
@@ -49,6 +50,10 @@ namespace Mntone.SvgForXaml
 				else if (target.GetType() == typeof(SvgIri))
 				{
 					value = new SvgIri(((SvgIri)c.Value.Item2).Uri);
+				}
+				else if (target.GetType() == typeof(SvgStrokeDasharray))
+				{
+					value = ((SvgStrokeDasharray)c.Value.Item2).DeepCopy();
 				}
 				else
 				{
@@ -91,6 +96,11 @@ namespace Mntone.SvgForXaml
 		public SvgFillRule? FillRule => this.GetPropertyCssValue("fill-rule") as SvgFillRule?;
 		public SvgPaint Stroke => this.GetPropertyCssValue("stroke") as SvgPaint;
 		public SvgLength? StrokeWidth => this.GetPropertyCssValue("stroke-width") as SvgLength?;
+		public SvgLength? StrokeDashoffset => this.GetPropertyCssValue("stroke-dashoffset") as SvgLength?;
+		public SvgStrokeLinecap? StrokeLinecap => this.GetPropertyCssValue("stroke-linecap") as SvgStrokeLinecap?;
+		public SvgStrokeLinejoin? StrokeLinejoin => this.GetPropertyCssValue("stroke-linejoin") as SvgStrokeLinejoin?;
+		public SvgNumber? StrokeMiterlimit => this.GetPropertyCssValue("stroke-miterlimit") as SvgNumber?;
+		public SvgStrokeDasharray StrokeDasharray => this.GetPropertyCssValue("stroke-dasharray") as SvgStrokeDasharray;
 		public SvgNumber? StrokeOpacity => this.GetPropertyCssValue("stroke-opacity") as SvgNumber?;
 		public SvgColor StopColor => this.GetPropertyCssValue("stop-color") as SvgColor;
 		public SvgNumber? StopOpacity => this.GetPropertyCssValue("stop-opacity") as SvgNumber?;
@@ -129,6 +139,7 @@ namespace Mntone.SvgForXaml
 					break;
 
 				case "stroke-width":
+				case "stroke-dashoffset":
 					parsedValue = SvgLength.Parse(value, presentation);
 					break;
 
@@ -138,6 +149,7 @@ namespace Mntone.SvgForXaml
 
 				case "fill-opacity":
 				case "stroke-opacity":
+				case "stroke-miterlimit":
 				case "stop-opacity":
 				case "opacity":
 					parsedValue = SvgNumber.Parse(value, 0.0F, 1.0F);
@@ -151,6 +163,19 @@ namespace Mntone.SvgForXaml
 				case "clip-rule":
 					parsedValue = new SvgFillRule(presentation ? value : value.ToLower());
 					break;
+				
+				case "stroke-linecap":
+					parsedValue = new SvgStrokeLinecap(value);
+					break;
+				
+				case "stroke-linejoin":
+					parsedValue = new SvgStrokeLinejoin(value);
+					break;
+				
+				case "stroke-dasharray":
+					parsedValue = SvgStrokeDasharray.Parse(value);
+					break;
+				
 				case "display":
 					parsedValue = new SvgDisplay(value);
 					break;

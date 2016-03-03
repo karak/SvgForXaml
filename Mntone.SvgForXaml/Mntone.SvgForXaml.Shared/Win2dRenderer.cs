@@ -126,11 +126,15 @@ namespace Mntone.SvgForXaml
 					}
 
 					var stroke = style.Stroke;
+					var strokeWidth = style.StrokeWidth;
 					if (stroke != null && stroke.PaintType != SvgPaintType.None)
 					{
+						var canvasStrokeWidth = strokeWidth.HasValue ? this.LengthConverter.Convert(strokeWidth.Value) : 1.0F;
 						var pen = this.CreatePaint(session, area, stroke, style.StrokeOpacity);
-						var strokeWidth = style.StrokeWidth;
-						session.DrawGeometry(geometry2, pen, strokeWidth.HasValue ? this.LengthConverter.Convert(strokeWidth.Value) : 1.0F);
+						using (var strokeStyle = CreateStrokeStyle(style.StrokeDashoffset, style.StrokeLinecap, style.StrokeLinejoin, style.StrokeMiterlimit, style.StrokeDasharray, canvasStrokeWidth))
+						{
+							session.DrawGeometry(geometry2, pen, canvasStrokeWidth, strokeStyle);
+						}
 					}
 				}
 			}
@@ -586,6 +590,49 @@ namespace Mntone.SvgForXaml
 			return brush;
 		}
 
+		private CanvasStrokeStyle CreateStrokeStyle(SvgLength? strokeDashoffset, SvgStrokeLinecap? strokeLinecap, SvgStrokeLinejoin? strokeLinejoin, SvgNumber? strokeMiterLimit, SvgStrokeDasharray strokeDashArray, float strokeWidth)
+		{
+			return new CanvasStrokeStyle
+			{
+				StartCap = strokeLinecap.HasValue ? GetCanvasCapStyle(strokeLinecap.Value.Value) : CanvasCapStyle.Flat,
+				EndCap = strokeLinecap.HasValue ? GetCanvasCapStyle(strokeLinecap.Value.Value) : CanvasCapStyle.Flat,
+				LineJoin = GetCanvasLineJoin(strokeLinejoin.HasValue ? strokeLinejoin.Value.Value : SvgStrokeLinejoin.Initial),
+				MiterLimit = strokeMiterLimit?.Value ?? 4,
+
+				DashStyle = CanvasDashStyle.Solid,
+				DashOffset = GetDashOffset(strokeDashoffset, strokeWidth),
+				CustomDashStyle = GetStrokeDashArray(strokeDashArray, strokeWidth),
+				DashCap = CanvasCapStyle.Flat,
+				//UNDONE: DashOffset
+			};
+		}
+
+		private float GetDashOffset(SvgLength? strokeDashoffset, float strokeWidth)
+		{
+			return (strokeDashoffset.HasValue ? this.LengthConverter.Convert(strokeDashoffset.Value) : 0F) / strokeWidth;
+			//SPEC NOTE: Initial value should be 1 with no limit identifier, but is actually 0 in IE11.
+		}
+
+		private float[] GetStrokeDashArray(SvgStrokeDasharray strokeDashArray, float strokeWidth)
+		{
+			if (strokeDashArray == null || strokeDashArray.Count == 0) return null;
+
+			IEnumerable<SvgLength> source;
+			if (strokeDashArray.Count % 2 == 0)
+			{
+				//even
+				source = strokeDashArray;
+			}
+			else
+			{
+				//odd => repeat
+				source = strokeDashArray.Concat(strokeDashArray);
+			}
+			
+			return source.Select(x => LengthConverter.Convert(x) / strokeWidth).ToArray();
+			//SPEC NOTE: Actual length is the product of each element of CustomDashStyle and stroke-width.
+		}
+
 		private static CanvasEdgeBehavior GetSpreadMethod(SvgSpreadMethodType spreadMethod)
 		{
 			switch (spreadMethod)
@@ -594,6 +641,36 @@ namespace Mntone.SvgForXaml
 				case SvgSpreadMethodType.Repeat: return CanvasEdgeBehavior.Wrap;
 			}
 			return CanvasEdgeBehavior.Clamp;
+		}
+
+		private static CanvasCapStyle GetCanvasCapStyle(SvgStrokeLinecapType strokeLinecap)
+		{
+			switch (strokeLinecap)
+			{
+				case SvgStrokeLinecapType.Butt:
+					return CanvasCapStyle.Flat;
+				case SvgStrokeLinecapType.Round:
+					return CanvasCapStyle.Round;
+				case SvgStrokeLinecapType.Square:
+					return CanvasCapStyle.Square;
+				default:
+					return CanvasCapStyle.Flat;
+			}
+		}
+
+		private static CanvasLineJoin GetCanvasLineJoin(SvgStrokeLinejoinType strokeLinejoin)
+		{
+			switch (strokeLinejoin)
+			{
+				case SvgStrokeLinejoinType.Miter:
+					return CanvasLineJoin.MiterOrBevel;
+				case SvgStrokeLinejoinType.Round:
+					return CanvasLineJoin.Round;
+				case SvgStrokeLinejoinType.Bebel:
+					return CanvasLineJoin.Bevel;
+				default:
+					return CanvasLineJoin.MiterOrBevel;
+			}
 		}
 	}
 }

@@ -30,11 +30,15 @@ namespace Mntone.SvgForXaml
 			switch (length.UnitType)
 			{
 				case SvgLength.SvgLengthType.Percentage:
+					return (float)(length.Value * (CanvasSize.X * CanvasSize.X + CanvasSize.Y * CanvasSize.Y) * invertedSqrt2 / 100.0F);
 				case SvgLength.SvgLengthType.Ems:
 				case SvgLength.SvgLengthType.Exs:
 					throw new NotSupportedException();
+				default:
+					return length.ValueAsPixel;
 			}
-			return length.ValueAsPixel;
 		}
+
+		private static readonly double invertedSqrt2 = Math.Sqrt(0.5); 
 	}
 }

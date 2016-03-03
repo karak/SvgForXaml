@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISvgStylable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interfaces\ISvgTransformable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\StringPtr.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Internal\StrokeDasharrayParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\SvgHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\SvgStylableHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Internal\SvgTransformableHelper.cs" />
@@ -43,8 +44,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\RgbColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgDisplayType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgDisplay.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgStrokeLinejoin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgStrokeLinecap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgAngle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgStrokeDasharray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgFillRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgFillRuleType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgIri.cs" />
@@ -56,6 +60,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgPointCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgRect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgStrokeLinejoinType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgStrokeLinecapType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgTransformCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitives\SvgUnitType.cs" />
